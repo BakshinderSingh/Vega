@@ -16,10 +16,11 @@ namespace DemoApp.Models
         public bool IsRegistered { get; set; }
         public Contact Contact { get; set; }
         public DateTime LastUpdate { get; set; }
-        public ICollection<Feature> Features { get; set; }
+        public ICollection<VehicleFeature> Features { get; set; }
+        public Feature Feature { set; get; }
         public Vehicle()
         {
-            Features = new Collection<Feature>();
+            Features = new Collection<VehicleFeature>();
         }
     }
 

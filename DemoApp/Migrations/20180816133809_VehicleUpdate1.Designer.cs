@@ -4,14 +4,16 @@ using DemoApp.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DemoApp.Migrations
 {
     [DbContext(typeof(VegaDbContext))]
-    partial class VegaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180816133809_VehicleUpdate1")]
+    partial class VehicleUpdate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +31,11 @@ namespace DemoApp.Migrations
                         .IsRequired()
                         .HasMaxLength(255);
 
+                    b.Property<int?>("VehicleId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("Features");
                 });
@@ -91,17 +97,11 @@ namespace DemoApp.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("DemoApp.Models.VehicleFeature", b =>
+            modelBuilder.Entity("DemoApp.Models.Feature", b =>
                 {
-                    b.Property<int>("VehicleId");
-
-                    b.Property<int>("FeatureId");
-
-                    b.HasKey("VehicleId", "FeatureId");
-
-                    b.HasIndex("FeatureId");
-
-                    b.ToTable("VehicleFeatures");
+                    b.HasOne("DemoApp.Models.Vehicle")
+                        .WithMany("Features")
+                        .HasForeignKey("VehicleId");
                 });
 
             modelBuilder.Entity("DemoApp.Models.Model", b =>
@@ -146,19 +146,6 @@ namespace DemoApp.Migrations
                                 .HasForeignKey("DemoApp.Models.Contact", "VehicleId")
                                 .OnDelete(DeleteBehavior.Cascade);
                         });
-                });
-
-            modelBuilder.Entity("DemoApp.Models.VehicleFeature", b =>
-                {
-                    b.HasOne("DemoApp.Models.Feature", "Feature")
-                        .WithMany()
-                        .HasForeignKey("FeatureId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DemoApp.Models.Vehicle", "Vehicle")
-                        .WithMany("Features")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
