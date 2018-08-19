@@ -29,10 +29,10 @@ namespace DemoApp.Controllers
         }
 
         [HttpGet("/api/features")]
-        public IEnumerable<FeatureResource> Features()
+        public IEnumerable<KeyValuePairResource> Features()
         {
             var makes = context.Features.ToList();
-            return mapper.Map<List<Feature>, List<FeatureResource>>(makes);
+            return mapper.Map<List<Feature>, List<KeyValuePairResource>>(makes);
         }
 
 

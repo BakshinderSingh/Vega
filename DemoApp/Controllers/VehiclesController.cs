@@ -7,6 +7,7 @@ using DemoApp.Controllers.Resources;
 using DemoApp.Models;
 using DemoApp.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DemoApp.Controllers
 {
@@ -14,26 +15,76 @@ namespace DemoApp.Controllers
     public class VehiclesController : Controller
     {
         private readonly IMapper mapper;
-        private readonly VegaDbContext context;
+        private readonly IVehicleRepository repository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public VehiclesController(IMapper mapper, VegaDbContext context)
+        public VehiclesController(IMapper mapper,IVehicleRepository repository,IUnitOfWork unitOfWork)
         {
             this.mapper = mapper;
-            this.context = context;
+            this.repository = repository;
+            this.unitOfWork = unitOfWork;
         }
         [HttpPost]
-        public IActionResult CreateVehicle([FromBody]VehicleResource vehicle)
+        public IActionResult CreateVehicle([FromBody]SaveVehicleResource vehicleResource)
         {
-            if(!ModelState.IsValid)
+            throw new Exception();
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var vehicle1 = mapper.Map<VehicleResource, Vehicle>(vehicle);
-            vehicle1.LastUpdate = DateTime.Now;
-            context.Vehicles.Add(vehicle1);
-            context.SaveChanges();
-            var vehicle2 = mapper.Map<Vehicle, VehicleResource>(vehicle1);
-            return Ok(vehicle2);
+
+            //var model = context.Models.Find(vehicleResource.ModelId);
+            //if (model == null)
+            //{
+            //    ModelState.AddModelError("ModelId", "Invalid modelId");
+            //    return BadRequest(ModelState);
+            //}
+            var vehicle = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource);
+            vehicle.LastUpdate = DateTime.Now;
+            repository.AddVehicle(vehicle);
+            unitOfWork.Complete();
+            vehicle = repository.GetVehicle(vehicle.Id);
+            var vehicleResourceOut = mapper.Map<Vehicle,VehicleResource>(vehicle);
+            return Ok(vehicleResourceOut);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateVehicle(int id, [FromBody]SaveVehicleResource vehicleResource)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var vehicle = repository.GetVehicle(id);
+            if (vehicle == null)
+                return NotFound();
+            mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource, vehicle);
+            vehicle.LastUpdate = DateTime.Now;
+            unitOfWork.Complete();
+            vehicle = repository.GetVehicle(vehicle.Id);
+            var vehicleResourceOut = mapper.Map<Vehicle,VehicleResource>(vehicle);
+            return Ok(vehicleResourceOut);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteVehicle(int id)
+        {
+            var vehicle = repository.GetVehicle(id,includeRelated:false);
+            if (vehicle == null)
+                return NotFound();
+            repository.RemoveVehicle(vehicle);
+            unitOfWork.Complete();
+            return Ok(id);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetVehicles(int id)
+        {
+            var vehicle = repository.GetVehicle(id);
+            if (vehicle == null)
+                return NotFound();
+            var vehicleResource= mapper.Map<Vehicle, VehicleResource>(vehicle);
+            return Ok(vehicleResource);
         }
     }
 }
