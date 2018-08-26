@@ -5,6 +5,8 @@ import { ToastyService } from 'ng2-toasty';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
+import { SaveVehicle, Vehicle } from '../models/vehicle';
+import * as _ from 'underscore';
 
 @Component({
   selector: 'app-vehicle-form',
@@ -13,8 +15,19 @@ import 'rxjs/add/observable/forkJoin';
 })
 export class VehicleFormComponent implements OnInit {
   makes;
-  vehicle: any = {
-    features: [], contact: {}};
+  vehicle: SaveVehicle = {
+    id:0,
+    makeId: 0,
+    isRegistered: false,
+    modelId: 0,
+    features: [],
+    contact:
+      {
+        email: '',
+        name: '',
+        phone: ''
+      }
+  };
   models;
   features;
   constructor(private vehicleSrv: VehicleService, private toastyService: ToastyService
@@ -23,28 +36,39 @@ export class VehicleFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    Observable.forkJoin([
-      this.vehicleSrv.getMakes(),
-      this.vehicleSrv.getFeatures(),
-      this.vehicleSrv.getVehicle(this.vehicle.id)
-    ]).subscribe(data => {
+    let sources = [this.vehicleSrv.getMakes(),
+      this.vehicleSrv.getFeatures()];
+    if (this.vehicle.id)
+      sources.push(this.vehicleSrv.getVehicle(this.vehicle.id));
+    Observable.forkJoin(sources).subscribe(data => {
       this.makes = data[0];
       this.features = data[1];
-      this.vehicle = data[2];
+      if (this.vehicle.id) {
+        this.setVehicle(data[2]);
+        this.populateModels();
+      }
       }, err => {
-        if (err.status == 404)
+        if (err.status == 404) { }
           this.router.navigate(['/home']);
       }
       )
+  }
 
-    //this.vehicleSrv.getVehicle(this.vehicle.id).subscribe(v => this.vehicle = v, err => { console.log("Not Fiound"); this.router.navigate(['/home']); }, () => { console.log(this.vehicle) });
-    //this.vehicleSrv.getMakes().subscribe(makes => this.makes = makes, err => { console.log(err); }, () => { console.log(this.makes) });
-    //this.vehicleSrv.getFeatures().subscribe(features => this.features = features, err => { console.log(err); }, () => { console.log(this.features) });
+  private setVehicle(v: Vehicle) {
+    this.vehicle.makeId = v.make.id;
+    this.vehicle.modelId = v.model.id;
+    this.vehicle.contact = v.contact;
+    this.vehicle.isRegistered = v.isRegistered;
+    this.vehicle.features = _.pluck(v.features, 'id');;
+  }
+
+  populateModels() {
+    let make = this.makes.find(m => m.id == this.vehicle.makeId)
+    this.models = make ? make.models : []; 
   }
 
   onMakeChange() {
-    let make=this.makes.find(m => m.id == this.vehicle.makeId)
-    this.models = make ? make.models : [];
+    this.populateModels(); 
     delete this.vehicle.modelId;
   }
   onModelChange() {
@@ -61,9 +85,28 @@ export class VehicleFormComponent implements OnInit {
     }
   }
   submit() {
-    console.log("submit");
-    this.vehicleSrv.createVehicle(this.vehicle).subscribe(res => console.log(res)
-    )
+    if (this.vehicle.id) {
+      this.vehicleSrv.updateVehicle(this.vehicle).subscribe(res => {
+        console.log(res);
+        this.toastyService.success({
+          title: 'Success',
+          msg: 'The Vehicle updated successfully.',
+          theme: 'bootstrap',
+          showClose: true,
+          timeout: 5000
+        })
+      })
+    }
+    else
+      this.vehicleSrv.createVehicle(this.vehicle).subscribe(res => console.log(res));
+  }
+
+  deleteVehicle() {
+    if (confirm('Are you sure?'))
+      this.vehicleSrv.deleteVehicle(this.vehicle.id).subscribe
+        (res => {
+          this.router.navigate(['/home']);
+        });
   }
 
 }

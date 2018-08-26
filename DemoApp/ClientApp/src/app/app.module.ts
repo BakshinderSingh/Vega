@@ -14,6 +14,7 @@ import { VehicleService } from './services/vehicle.service';
 import { HttpModule } from '@angular/http';
 import { AppErrorHandler } from './app.error-handler';
 import * as Raven from 'raven-js';
+import { VehicleListComponent } from './vehicle-list/vehicle-list.component';
 
 Raven
   .config('https://4dcf1307ce874808a8b6b3c9ee016eb6@sentry.io/1264941')
@@ -26,24 +27,26 @@ Raven
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    VehicleFormComponent
+    VehicleFormComponent,
+    VehicleListComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-
     ToastyModule.forRoot(),
     HttpModule,
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: '', component: VehicleListComponent, pathMatch: 'full' },
+      { path: 'home', component: HomeComponent },
       { path: 'vehicles/new', component: VehicleFormComponent },
       { path: 'vehicles/:id', component: VehicleFormComponent },
+      { path: 'vehicles', component: VehicleListComponent },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
     ])
   ],
-  providers: [{ provide: ErrorHandler, useClass: AppErrorHandler} , VehicleService],
+  providers: [{ provide: ErrorHandler, useClass: AppErrorHandler }, VehicleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

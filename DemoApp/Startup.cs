@@ -49,7 +49,6 @@ namespace DemoApp
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

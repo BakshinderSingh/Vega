@@ -24,10 +24,11 @@ namespace DemoApp.Controllers
             this.repository = repository;
             this.unitOfWork = unitOfWork;
         }
+
         [HttpPost]
         public IActionResult CreateVehicle([FromBody]SaveVehicleResource vehicleResource)
         {
-            throw new Exception();
+            //throw new Exception();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -85,6 +86,17 @@ namespace DemoApp.Controllers
                 return NotFound();
             var vehicleResource= mapper.Map<Vehicle, VehicleResource>(vehicle);
             return Ok(vehicleResource);
+        }
+
+
+        [HttpGet]
+        public IActionResult GetVehicles(VehicleQueryResource filterResource)
+        {
+            var filter = mapper.Map<VehicleQueryResource, VehicleQuery>(filterResource);
+            var vehicles = repository.GetVehicles(filter);
+            if (vehicles.Count() == 0)
+                return NotFound();
+            return Ok(mapper.Map<List<Vehicle>, List<VehicleResource>>(vehicles));
         }
     }
 }

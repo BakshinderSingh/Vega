@@ -24,27 +24,28 @@
   </div>
 
   <p>Is Vehicle Registered?</p>
-  <label for="registered" class="radio-inline"><input name="isRegistered" type="radio" value="true" id="registered" [(ngModel)]="vehicle.isRegistered"/>Yes</label>
-  <label for="notregistered" class="radio-inline"><input name="isRegistered" type="radio" value="false" id="notregistered" [(ngModel)]="vehicle.isRegistered"/>No</label>
+  <label for="registered" class="radio-inline"><input name="isRegistered" type="radio" [value]="true" id="registered" [(ngModel)]="vehicle.isRegistered"/>Yes</label>
+  <label for="notregistered" class="radio-inline"><input name="isRegistered" type="radio" [value]="false" id="notregistered" [(ngModel)]="vehicle.isRegistered"/>No</label>
   <h2>Features</h2>
   <div class="checkout" *ngFor="let f of features">
-    <label for="feature{{f.id}}"><input type="checkbox" id="feature{{f.id}}" (change)="onFeatureChanged(f.id,$event)"/>{{f.name}}</label>
+    <label for="feature{{f.id}}"><input type="checkbox" id="feature{{f.id}}" (change)="onFeatureChanged(f.id,$event)" [checked]="vehicle.features.includes(f.id)"/>{{f.name}}</label>
   </div>
 
   <h2>Contact</h2>
 
   <div class="form-group">
     <label for="contactName">Name</label>
-    <input type="text" id="contactName" name="contactName" value="" class="form-control" [(ngModel)]="vehicle.contact.Name"/>
+    <input type="text" id="contactName" name="contactName" value="" class="form-control" [(ngModel)]="vehicle.contact.name"/>
   </div>
   <div class="form-group">
     <label for="contactPhone">Phone</label>
-    <input type="text" id="contactPhone" name="contactPhone" value="" class="form-control" [(ngModel)]="vehicle.contact.Phone" />
+    <input type="text" id="contactPhone" name="contactPhone" value="" class="form-control" [(ngModel)]="vehicle.contact.phone" />
   </div>
   <div class="form-group">
     <label for="contactEmail">Email</label>
-    <input type="text" id="contactEmail" name="contactEmail" value="" class="form-control" [(ngModel)]="vehicle.contact.Email"/>
+    <input type="text" id="contactEmail" name="contactEmail" value="" class="form-control" [(ngModel)]="vehicle.contact.email"/>
   </div>
-  <button class="btn btn-primary"  type="submit" [disabled]="!formVar.valid"> Save</button>      
+  <button class="btn btn-primary"  type="submit" [disabled]="!formVar.valid"> Save</button>
+  <button class="btn btn-danger" type="button" [disabled]="!formVar.valid" (click)="deleteVehicle()" *ngIf="vehicle.id"> Delete</button>
 </form>
 

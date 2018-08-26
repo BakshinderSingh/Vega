@@ -37,6 +37,14 @@
     <Compile Remove="Migrations\20180817170200_test1.Designer.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\models\vehicle.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\models\vehicle.ts" />
+  </ItemGroup>
+
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
