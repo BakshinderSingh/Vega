@@ -15,6 +15,15 @@ import { HttpModule } from '@angular/http';
 import { AppErrorHandler } from './app.error-handler';
 import * as Raven from 'raven-js';
 import { VehicleListComponent } from './vehicle-list/vehicle-list.component';
+import { ViewVehicleComponent } from './view-vehicle/view-vehicle.component';
+import { PhotoService } from './services/photo.service';
+import { BrowserXhrWithProgress, ProgressService } from './services/progress.service';
+import { AuthService } from './services/auth.service';
+import { CallbackComponent } from './callback/callback.component';
+import { AdminComponent } from './admin/admin.component';
+import { AuthGuardService } from './auth-guard.service';
+import { AdminAuthGuardService } from './admin-auth-guard.service';
+import { AUTH_PROVIDERS } from 'angular2-Jwt';
 
 Raven
   .config('https://4dcf1307ce874808a8b6b3c9ee016eb6@sentry.io/1264941')
@@ -28,7 +37,10 @@ Raven
     CounterComponent,
     FetchDataComponent,
     VehicleFormComponent,
-    VehicleListComponent
+    VehicleListComponent,
+    ViewVehicleComponent,
+    CallbackComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -40,13 +52,22 @@ Raven
       { path: '', component: VehicleListComponent, pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
       { path: 'vehicles/new', component: VehicleFormComponent },
-      { path: 'vehicles/:id', component: VehicleFormComponent },
+      { path: 'vehicles/edit/:id', component: VehicleFormComponent },
+      { path: 'vehicles/:id', component: ViewVehicleComponent },
       { path: 'vehicles', component: VehicleListComponent },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'callback', component: CallbackComponent },
+      { path: 'admin', component: AdminComponent, canActivate: [AdminAuthGuardService] }
     ])
   ],
-  providers: [{ provide: ErrorHandler, useClass: AppErrorHandler }, VehicleService],
+  providers: [
+    { provide: ErrorHandler, useClass: AppErrorHandler },    
+    AUTH_PROVIDERS,
+    VehicleService,
+    PhotoService,
+    ProgressService,
+    AuthService, AuthGuardService, AdminAuthGuardService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
