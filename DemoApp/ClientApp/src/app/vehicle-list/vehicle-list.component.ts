@@ -13,19 +13,33 @@ export class VehicleListComponent implements OnInit {
   //allVehicles: Vehicle[];
   makes: KeyValuePair[];
   filter: any = {};
+  columns = [
+    { title: 'Contact Name', key: 'contactName', isSortable: true },
+    { title: 'Make', key: 'make', isSortable: true },
+    {title:'Model',key:'model',isSortable:true}
+  ]
   constructor(private VehicleService: VehicleService) {
   }
 
   ngOnInit() {
     Observable.forkJoin(this.VehicleService.getMakes(), this.VehicleService.getVehicles(this.filter)).subscribe(
-      data => { this.makes = data[0]; this.vehicles = data[1]; }
+      data => {
+        this.makes = data[0];
+        this.vehicles = data[1];
+      }
     )
   }
 
   onFilterChange() {
-    //var vehicles = this.allVehicles;
-    //vehicles=vehicles.filter(v => v.make.id == this.filter.makeId);
-    //this.vehicles = vehicles;
+    this.VehicleService.getVehicles(this.filter).subscribe(vehicles => this.vehicles = vehicles);
+  }
+  sortBy(sortElement) {
+    if (this.filter.SortBy === sortElement)
+      this.filter.isSortAscending = !this.filter.isSortAscending;
+    else {
+      this.filter.isSortAscending = true;
+      this.filter.SortBy = sortElement;
+    }
     this.VehicleService.getVehicles(this.filter).subscribe(vehicles => this.vehicles = vehicles);
   }
   ResetFilter() {

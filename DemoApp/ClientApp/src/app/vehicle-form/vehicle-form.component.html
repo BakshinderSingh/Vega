@@ -1,7 +1,7 @@
 
 <h1> New Vehicle</h1>
 <form #formVar="ngForm" (ngSubmit)="submit()" *ngIf="makes!=null" novalidate>
-  <p>{{vehicle|json}}</p>
+  <p>{{vehicle.id}}</p>
   <div class="form-group">
     <label for="make">
       Make

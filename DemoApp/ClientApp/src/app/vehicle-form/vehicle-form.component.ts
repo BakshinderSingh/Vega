@@ -31,8 +31,12 @@ export class VehicleFormComponent implements OnInit {
   models;
   features;
   constructor(private vehicleSrv: VehicleService, private toastyService: ToastyService
-    , private route: ActivatedRoute, private router: Router) {
-    route.params.subscribe(data => this.vehicle.id = +data['id']);
+    , private route: ActivatedRoute, private router: Router)
+  {
+    route.params.subscribe(data => {
+      if(data['id'])
+        this.vehicle.id = +data['id']
+    });
   }
 
   ngOnInit() {
@@ -68,11 +72,12 @@ export class VehicleFormComponent implements OnInit {
   }
 
   onMakeChange() {
+
+    console.log(this.vehicle);
     this.populateModels(); 
     delete this.vehicle.modelId;
   }
   onModelChange() {
-    console.log(this.vehicle);
   }
   onFeatureChanged(featureId, event) {
     if (event.target.checked) {
@@ -97,8 +102,11 @@ export class VehicleFormComponent implements OnInit {
         })
       })
     }
-    else
+    else {
+      console.log(this.vehicle);
       this.vehicleSrv.createVehicle(this.vehicle).subscribe(res => console.log(res));
+
+    }
   }
 
   deleteVehicle() {

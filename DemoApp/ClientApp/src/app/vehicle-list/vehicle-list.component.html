@@ -16,9 +16,7 @@
   <thead>
     <tr>
       <th>ID</th>
-      <th>Make</th>
-      <th>Model</th>
-      <th>ContactName</th>
+      <th *ngFor="let prop of columns" (click)="sortBy(prop.key)">{{prop.title}} <i *ngIf="filter.SortBy==prop.key" class="fa" [ngClass]="filter.isSortAscending?'fa-sort-asc':'fa-sort-desc'"></i></th>
       <th>Edit</th>
     </tr>
   </thead>

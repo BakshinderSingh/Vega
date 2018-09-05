@@ -24,7 +24,7 @@ export class VehicleService {
     return this.http.get('api/vehicles/' + id).map(res => res.json());
   }
   getVehicles(filter) {
-    return this.http.get('api/vehicles/' + '?' + this.toQueryString(filter)).map(res => res.json());
+    return this.http.get('api/vehicles' + '?' + this.toQueryString(filter)).map(res => res.json());
   }
 
   toQueryString(obj) {
