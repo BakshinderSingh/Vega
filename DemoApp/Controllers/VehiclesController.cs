@@ -6,6 +6,7 @@ using AutoMapper;
 using DemoApp.Controllers.Resources;
 using DemoApp.Models;
 using DemoApp.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ namespace DemoApp.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult CreateVehicle([FromBody]SaveVehicleResource vehicleResource)
         {
             //throw new Exception();

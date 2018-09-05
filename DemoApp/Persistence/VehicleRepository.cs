@@ -58,10 +58,12 @@ namespace DemoApp.Persistence
                 .Include(v => v.Features).ThenInclude(vf => vf.Feature)
                 .SingleOrDefault(v => v.Id == id);
         }
+
         public void AddVehicle(Vehicle vehicle)
         {
             context.Vehicles.Add(vehicle);
         }
+
         public void RemoveVehicle(Vehicle vehicle)
         {
             context.Vehicles.Remove(vehicle);

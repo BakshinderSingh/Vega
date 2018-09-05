@@ -31,10 +31,9 @@ export class VehicleFormComponent implements OnInit {
   models;
   features;
   constructor(private vehicleSrv: VehicleService, private toastyService: ToastyService
-    , private route: ActivatedRoute, private router: Router)
-  {
+    , private route: ActivatedRoute, private router: Router) {
     route.params.subscribe(data => {
-      if(data['id'])
+      if (data['id']!=null)
         this.vehicle.id = +data['id']
     });
   }
@@ -72,12 +71,11 @@ export class VehicleFormComponent implements OnInit {
   }
 
   onMakeChange() {
-
-    console.log(this.vehicle);
     this.populateModels(); 
     delete this.vehicle.modelId;
   }
   onModelChange() {
+    console.log(this.vehicle);
   }
   onFeatureChanged(featureId, event) {
     if (event.target.checked) {
@@ -90,24 +88,18 @@ export class VehicleFormComponent implements OnInit {
     }
   }
   submit() {
-    if (this.vehicle.id) {
-      this.vehicleSrv.updateVehicle(this.vehicle).subscribe(res => {
-        console.log(res);
-        this.toastyService.success({
-          title: 'Success',
-          msg: 'The Vehicle updated successfully.',
-          theme: 'bootstrap',
-          showClose: true,
-          timeout: 5000
-        })
-      })
+    var result$ = (this.vehicle.id) ? this.vehicleSrv.updateVehicle(this.vehicle) : this.vehicleSrv.createVehicle(this.vehicle);
+    result$.subscribe(vehicle => {
+      this.toastyService.success({
+        title: 'Success',
+        msg: 'Data saved successfully.',
+        theme: 'bootstrap',
+        showClose: true,
+        timeout: 5000
+      });
+      this.router.navigate(['/vehicles/', vehicle.id])
+    });
     }
-    else {
-      console.log(this.vehicle);
-      this.vehicleSrv.createVehicle(this.vehicle).subscribe(res => console.log(res));
-
-    }
-  }
 
   deleteVehicle() {
     if (confirm('Are you sure?'))
